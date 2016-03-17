@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <memory>
 
-template <class T>
+template <class T, class allocator = std::allocator<T> >
 class vector
 {
 public:
@@ -70,7 +70,7 @@ private:
 	iterator start;
 	iterator finish;
 	iterator end_of_storage;
-	static std::allocator<T> alloc;
+	static allocator alloc;
 
 	inline int capacity_size() { return end_of_storage - start; }
 };
