@@ -4,39 +4,38 @@
 
 namespace tinyMemo
 {
-	template <class T>
-	inline T* __allocate(int n, T*)
+	template <class it>
+	class traits
 	{
-		return (T*)malloc(n); 
-	}
-	
-	template <class T>
-	inline void __delete(T* p)
-	{
-		free(p);
-	}
-
-	template <class T>
-	inline void construct(T* p, T value)
-	{
-		new(p) T(value);
-	}
-
-	template <class T>
-	inline void __destroy(T* ptr)
-	{
-		ptr->~T();
-	}
-	
-	template <class T>
-	class reall
-	
-	template <class T>
-	class allocator 
-	{
-		typedef T value_type;
-		typedef T* pointer;
+	public:
+		typedef typename it::value_type value_type;
 	};
 
+	template <class it>
+	class traits<it*>
+	{
+	public:
+		typedef it value_type;
+	};
+
+	template <class it>
+	class traits<const it*>
+	{
+	public:
+		typedef it value_type;
+	};
+
+	template <class iterator>
+	void destroy(iterator a, iterator b){
+		typedef typename traits<iterator>::value_type T;
+		while(a != b) {
+			a->~T();
+			++a;
+		}
+	}
 	
+	template <class T>
+	void destroy(T* p){
+		p->~T();
+	}
 }
