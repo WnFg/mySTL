@@ -12,9 +12,8 @@ class vector
 {
 public:
 	typedef T value_type;
-	typedef value_type* iterator;
-	typedef value_type* pointer;
-	
+	typedef T* iterator;
+	typedef T* pointer;
 	vector() : start(0), finish(0), end_of_storage(0) {}
 
 	vector(const iterator& a, const iterator& b) : start(0), finish(0), end_of_storage(0) {
@@ -25,9 +24,10 @@ public:
 		insert(start, v.begin(), v.end());	
 	}
 	
-	~vector() { tinyMemo::destroy(start, finish);
-		std::cout << "asdasd" << std::endl;
-		alloc.deallocate(start, capacity_size()); }
+	~vector() { 
+		tinyMemo::destroy(start, finish);
+		alloc.deallocate(start, capacity_size()); 
+	}
 
 	iterator begin() { return start; }
 	iterator end() { return finish; }
@@ -44,33 +44,14 @@ public:
 	}
 	
 	T pop_back() {
-		T ret = *(finish - 1);
+		T ret = *finish;
 		tinyMemo::destroy(finish--);
 		return ret;
 	}
-	
-	// 清除[l,r)间的元素
-	iterator erase(iterator l, iterator r) {
-		std::uninitialized_copy(r, finish, l);
-		tinyMemo::destroy(l + (finish - r), finish);
-		finish -= r - l;
-		return finish;
-	}
-	
-	// 清除pos指向的元素
-	iterator erase(iterator pos) {
-		return erase(pos, pos + 1);
-	}
-	
-	// 清除所有元素
-	void clear() {
-		erase(start, finish);
-	}
-
-	// 向pos前插入元素
+	// 像pos前插入元素
 	void insert(iterator pos, const T& val) {
 		//const iterator it = (&val) + 1;
-		insert(pos, (iterator)&val, (iterator)(&val + 1));
+		insert(pos, &val, (&val) + 1);
 	}
 	
 	void insert(iterator pos, const iterator& l, const iterator& r) {
