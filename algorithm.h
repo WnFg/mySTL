@@ -1,9 +1,8 @@
 #ifndef __ALGORITHM_
 #define __ALGORITHM_
 
-#include <iostream>
-using namespace std;
 #include "memory.h"
+
 namespace tinyAr
 {
 	struct input_iterator_tag {};  // 只读迭代器，支持++

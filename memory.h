@@ -1,3 +1,6 @@
+#ifndef __MEMORY_
+#define __MEMORY_
+
 #include <cstdio>
 #include <new>
 #include <cstdlib>
@@ -39,3 +42,5 @@ namespace tinyMemo
 		p->~T();
 	}
 }
+
+#endif

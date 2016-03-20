@@ -1,5 +1,5 @@
 #include <iostream>
-#include "vector1.h"
+#include "vector.h"
 
 using namespace std;
 
@@ -51,7 +51,9 @@ GG swf(GG a) {
 int main()
 {
 	vector<int> vec;
-	vec.resize(5, 1);
+	//vec.resize(5, 1);
+	//vec.resize(10, 2);
+	vec.push_back(1);
 	for(int i = 0; i < vec.size(); i++) {
 		cout << vec[i] << endl;
 	}
