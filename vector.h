@@ -104,8 +104,7 @@ public:
 		if(oldSize == 0){
 			oldSize = newSize;
 			return (T*)alloc.allocate(newSize);
-		}
-		if(oldSize >= newSize) 
+		} else if(oldSize >= newSize) 
 			return NULL;
 		else {
 			while(newSize > oldSize)
@@ -128,9 +127,6 @@ public:
 		}
 
 		if(now_size > max_size) {
-			/*while(max_size < now_size) {
-				max_size <<= 1;
-			}*/
 			new_start = (T*) allocate_and_getNewPos(now_size, max_size);
 			std::uninitialized_copy(start, pos, new_start);
 			ret = new_start + (pos - start);
