@@ -136,22 +136,21 @@ public:
 			
 			// 销毁原始数据
 			tinyMemo::destroy(start, finish);  			
-			alloc.deallocate(start, size());
+			alloc.deallocate(start, capacity_size());
 			// 更新迭代器
 			start = new_start;
 			finish = new_start + now_size;
 			end_of_storage = new_start + max_size;
-			}else{
-				if(pos == start) {
-					std::uninitialized_copy(l, r, start + (r - l));
-				}else
-					for(iterator i = finish - 1, j = i + newElmentSize; i != pos - 1; i--, j--)
-						*j = *i;
-					
-				for(int i = 0; i < newElmentSize; i++)
-					*(pos + i) = *(l + i);
+		}else {
+			if(pos == start) {
+				std::uninitialized_copy(l, r, start + (r - l));
+			}else
+				for(iterator i = finish - 1, j = i + newElmentSize; i != pos - 1; i--, j--)
+					*j = *i;	
+			for(int i = 0; i < newElmentSize; i++)
+				*(pos + i) = *(l + i);
 			// 更新迭代器
-				finish = start + now_size;
+			finish = start + now_size;
 		}
 	}
 private:
