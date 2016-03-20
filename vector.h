@@ -68,13 +68,24 @@ public:
 		erase(start, finish);
 	}
 	
+	// 重置vector，新的大小为newSize
 	iterator resize(int newSize, const T& val) {
 		if(newSize <= size()) {
 			erase(start + newSize, finish);	
 		}else {
+			int oldSize = capacity_size();
+			T* newStart = allocate_and_getNewPos(newSize, oldSize);
+			if(newStart != NULL) {
+				std::uninitialized_copy(start, finish, newStart);
+				tinyMemo::destroy(start, finish);
+				alloc.deallocate(start, capacity_size());
+				// 更新迭代器
+				finish = newStart + size();
+				start = newStart;
+				end_of_storage = start + oldSize;
+			}
 			std::uninitialized_fill_n(finish, newSize - size(), val);
 			finish = start + newSize;
-			end_of_storage = finish;
 		}
 		return finish;
 	}
@@ -82,6 +93,7 @@ public:
 	iterator resize(int newSize) {
 		return resize(newSize, T());
 	}
+
 	// 向pos前插入元素
 	void insert(iterator pos, const T& val) {
 		//const iterator it = (&val) + 1;
