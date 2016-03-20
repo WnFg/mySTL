@@ -3,7 +3,7 @@
 
 #include <iostream>
 using namespace std;
-
+#include "memory.h"
 namespace tinyAr
 {
 	struct input_iterator_tag {};  // 只读迭代器，支持++
@@ -23,6 +23,17 @@ namespace tinyAr
 	getIteratorType(iterator*) {
 		return random_access_iterator_tag(); 
 	}
+
+	template <class iterator, class T>
+	iterator find(iterator l, iterator r, const T& value) {
+		while(l != r) {
+			if(*l == value)
+				return l;
+			++l;
+		}
+		return r;
+	}
+
 }
 
 #endif

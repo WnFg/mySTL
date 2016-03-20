@@ -25,9 +25,10 @@ public:
 		insert(start, v.begin(), v.end());	
 	}
 	
-	~vector() { tinyMemo::destroy(start, finish);
-		std::cout << "asdasd" << std::endl;
-		alloc.deallocate(start, capacity_size()); }
+	~vector() { 
+		tinyMemo::destroy(start, finish);
+		alloc.deallocate(start, capacity_size()); 
+	}
 
 	iterator begin() { return start; }
 	iterator end() { return finish; }
@@ -66,19 +67,48 @@ public:
 	void clear() {
 		erase(start, finish);
 	}
-
+	
+	iterator resize(int newSize, const T& val) {
+		if(newSize <= size()) {
+			erase(start + newSize, finish);	
+		}else {
+			std::uninitialized_fill_n(finish, newSize - size(), val);
+			finish = start + newSize;
+			end_of_storage = finish;
+		}
+		return finish;
+	}
+	
+	iterator resize(int newSize) {
+		return resize(newSize, T());
+	}
 	// 向pos前插入元素
 	void insert(iterator pos, const T& val) {
 		//const iterator it = (&val) + 1;
 		insert(pos, (iterator)&val, (iterator)(&val + 1));
 	}
 	
+	T* allocate_and_getNewPos(const int& newSize, int& oldSize) {
+		if(oldSize == 0){
+			oldSize = newSize;
+			return (T*)alloc.allocate(newSize);
+		}
+		if(oldSize >= newSize) 
+			return NULL;
+		else {
+			while(newSize > oldSize)
+				oldSize <<= 1;
+			return (T*)alloc.allocate(oldSize);
+		}
+	}
+
 	void insert(iterator pos, const iterator& l, const iterator& r) {
 		int now_size = r - l + size(), max_size = capacity_size();
 		T *new_start, *ret;
 		int newElmentSize = r - l;
 		if(max_size == 0) {
-			start = (T*)::operator new(sizeof(T)*(r - l));
+	//		start = (T*)::operator new(sizeof(T)*(r - l));
+			start = allocate_and_getNewPos(now_size, max_size);
 			finish = start + (r - l);
 			end_of_storage = finish;
 			std::uninitialized_copy(l, r, start);
@@ -86,10 +116,10 @@ public:
 		}
 
 		if(now_size > max_size) {
-			while(max_size < now_size) {
+			/*while(max_size < now_size) {
 				max_size <<= 1;
-			}
-			new_start = (T*) alloc.allocate(max_size);
+			}*/
+			new_start = (T*) allocate_and_getNewPos(now_size, max_size);
 			std::uninitialized_copy(start, pos, new_start);
 			ret = new_start + (pos - start);
 			std::uninitialized_copy(l, r, ret);

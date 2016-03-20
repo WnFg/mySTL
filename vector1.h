@@ -12,8 +12,9 @@ class vector
 {
 public:
 	typedef T value_type;
-	typedef T* iterator;
-	typedef T* pointer;
+	typedef value_type* iterator;
+	typedef value_type* pointer;
+	
 	vector() : start(0), finish(0), end_of_storage(0) {}
 
 	vector(const iterator& a, const iterator& b) : start(0), finish(0), end_of_storage(0) {
@@ -44,22 +45,80 @@ public:
 	}
 	
 	T pop_back() {
-		T ret = *finish;
+		T ret = *(finish - 1);
 		tinyMemo::destroy(finish--);
 		return ret;
 	}
-	// 像pos前插入元素
-	void insert(iterator pos, const T& val) {
-		//const iterator it = (&val) + 1;
-		insert(pos, &val, (&val) + 1);
+	
+	// 清除[l,r)间的元素
+	iterator erase(iterator l, iterator r) {
+		std::uninitialized_copy(r, finish, l);
+		tinyMemo::destroy(l + (finish - r), finish);
+		finish -= r - l;
+		return finish;
 	}
 	
+	// 清除pos指向的元素
+	iterator erase(iterator pos) {
+		return erase(pos, pos + 1);
+	}
+	
+	// 清除所有元素
+	void clear() {
+		erase(start, finish);
+	}
+	
+	iterator resize(int newSize, const T& val) {
+		if(newSize <= size()) {
+			erase(start + newSize, finish);	
+		}else {
+			int oldSize = capacity_size();
+			T* newStart = allocate_and_getNewPos(newSize, oldSize);
+			if(newStart != NULL) {
+				std::uninitialized_copy(start, finish, newStart);
+				tinyMemo::destroy(start, finish);
+				alloc.deallocate(start, capacity_size());
+				// 更新迭代器
+				finish = newStart + size();
+				start = newStart;
+				end_of_storage = start + oldSize;
+			}
+			std::uninitialized_fill_n(finish, newSize - size(), val);
+			finish = start + newSize;
+		}
+		return finish;
+	}
+	
+	iterator resize(int newSize) {
+		return resize(newSize, T());
+	}
+	// 向pos前插入元素
+	void insert(iterator pos, const T& val) {
+		//const iterator it = (&val) + 1;
+		insert(pos, (iterator)&val, (iterator)(&val + 1));
+	}
+	
+	T* allocate_and_getNewPos(const int& newSize, int& oldSize) {
+		if(oldSize == 0){
+			oldSize = newSize;
+			return (T*)alloc.allocate(newSize);
+		}
+		if(oldSize >= newSize) 
+			return NULL;
+		else {
+			while(newSize > oldSize)
+				oldSize <<= 1;
+			return (T*)alloc.allocate(oldSize);
+		}
+	}
+
 	void insert(iterator pos, const iterator& l, const iterator& r) {
 		int now_size = r - l + size(), max_size = capacity_size();
 		T *new_start, *ret;
 		int newElmentSize = r - l;
 		if(max_size == 0) {
-			start = (T*)::operator new(sizeof(T)*(r - l));
+	//		start = (T*)::operator new(sizeof(T)*(r - l));
+			start = allocate_and_getNewPos(now_size, max_size);
 			finish = start + (r - l);
 			end_of_storage = finish;
 			std::uninitialized_copy(l, r, start);
@@ -67,10 +126,10 @@ public:
 		}
 
 		if(now_size > max_size) {
-			while(max_size < now_size) {
+			/*while(max_size < now_size) {
 				max_size <<= 1;
-			}
-			new_start = (T*) alloc.allocate(max_size);
+			}*/
+			new_start = (T*) allocate_and_getNewPos(now_size, max_size);
 			std::uninitialized_copy(start, pos, new_start);
 			ret = new_start + (pos - start);
 			std::uninitialized_copy(l, r, ret);
