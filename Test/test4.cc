@@ -1,5 +1,5 @@
-#include "vector.h"
-#include "algorithm.h"
+#include "../vector.h"
+#include "../algorithm.h"
 #include <iostream>
 using namespace std;
 
