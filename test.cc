@@ -2,6 +2,7 @@
 using namespace std;
 #include "algorithm.h"
 #include "list.h"
+#include "fe.cc"
 
 /*template <class T>
 void f(const T&) {
@@ -13,22 +14,18 @@ void f(T&) {
 	cout << 2 << endl;
 }
 
+class A
+{
+public:
+	A() : a(123) {}
+	int a;	
+};
 int main()
 {
-	const int aaaa = 1;
-	f(aaaa);
-	list<int> a;
-	a.push_back(3);
-	a.push_back(2);
-	a.push_back(1);
-	for(list<int>::iterator it = a.begin(); it != a.end(); ++it) {
-		cout << it->data << endl;
-	}
-	a.sort(tinyAr::less<int>());
-	cout << endl;
-	for(list<int>::iterator it = a.begin(); it != a.end(); ++it) {
-		cout << it->data << endl;
-	}
-	cout << a.size() << endl;
+	int er = 1;
+	tinyMemo::destroy(&er);
+	typedef int T;
+	const int w = 1;
+	const B<int>::pointer ww = &w;
 	return 0;
 }

@@ -84,6 +84,10 @@ public:
 	list(iterator l, iterator r) : __size(0), finish(new value_type) {
 		insert(finish, l, r);
 	}
+	
+	~list() {
+		clear();
+	}
 
 	iterator push_back(const T& val) {
 		return insert(finish, val);
@@ -135,11 +139,20 @@ public:
 		iterator tmp(pos->next_node);
 		pos->next_node->last_node = pos->last_node;
 		pos->last_node->next_node = pos->next_node;
-		tinyMemo::destroy(pos);
+		tinyMemo::destroy(&pos->data);
+		alloc.deallocate(pos.node, 1);
 		--__size;
 		return tmp;
 	}
 	
+	void clear() {
+		iterator it = finish->next_node;
+		while(it != finish) {
+			erase(it);
+			++it;
+		}
+	}
+
 	template <class compare>
 	void sort(iterator l, iterator r, const compare& cmp) {
 		iterator ret, limit(l->last_node);
@@ -172,5 +185,6 @@ public:
 private:
 	iterator finish;
 	int __size;
+	std::allocator<value_type> alloc;
 };
 #endif

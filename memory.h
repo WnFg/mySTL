@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <new>
 #include <cstdlib>
+#include <memory>
 
 namespace tinyMemo
 {
@@ -40,6 +41,7 @@ namespace tinyMemo
 	template <class iterator>
 	void destroy(iterator p){
 		typedef typename traits<iterator>::value_type T;
+		cout << "asdqwe" << endl;
 		p->~T();
 	}
 }
