@@ -1,30 +1,32 @@
-#include "../vector.h"
 #include "../algorithm.h"
 #include <iostream>
+#include <time.h> 
+#include <stdio.h> 
+#include<sys/time.h>
+#include "../vector.h"
 using namespace std;
-
-class A
-{
-public:
-	A() { cout << "asd" << endl;}
-	A(const int& b) : a(b) {}
-	int a;
-};
-
-class B : public A
-{
-public:
-	B() { cout << "bsd" << endl; }
-	B(const int& b) : A(b) { cout << "bsd" << endl;}
-};
-
-int qwe[3] = {1, 2, 3};
 vector<int> vec;
-int main()
+int main(void)
 {
-	for(int i = 0; i < 10000000; i++) {
-		vec.push_back(i);
+	struct timeval startTime,endTime;
+	float Timeuse;
+	int i,j;
+	
+	gettimeofday(&startTime,NULL);
+	for(i =0;i <10;i++)
+	{
+		printf("Nice to see you\n");
+		for(j = 0;j <100; j++);
 	}
-	cout << vec[123353] << endl;
-	return 0;
+	for(int i = 0; i < 10000000; i++)
+		vec.push_back(i);
+	gettimeofday(&endTime,NULL);
+	
+	Timeuse = 1000000*(endTime.tv_sec - startTime.tv_sec) + (endTime.tv_usec - startTime.tv_usec);
+	
+	Timeuse /= 1000000;
+	
+	printf("Timeuse = %f\n",Timeuse);
+	
+return 0;
 }

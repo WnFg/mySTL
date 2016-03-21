@@ -11,7 +11,7 @@ namespace tinyAr
 	struct bidirectional_iterator_tag : public forward_iterator_tag {}; // 可双向移动，支持++，--
 	struct random_access_iterator_tag : public bidirectional_iterator_tag {}; // 可随机访问
 
-	template <class iterator>
+template <class iterator>
 	typename iterator::iterator_type  // 获取迭代器类型
 	getIteratorType(iterator) {
 		return iterator::iterator_type();
