@@ -16,9 +16,8 @@ struct __list_node
 };
 
 template <class T>
-class __list_iterator
+struct __list_iterator
 {
-public:
 	typedef T value_type;
 	typedef tinyAr::bidirectional_iterator_tag iterator_category;
 	typedef T* pointer;
@@ -140,15 +139,16 @@ public:
 		--__size;
 		return tmp;
 	}
-
-	void sort(iterator l, iterator r) {
+	
+	template <class compare>
+	void sort(iterator l, iterator r, const compare& cmp) {
 		iterator ret, limit(l->last_node);
 		T t;
 		for(; l != r; ++l) {
 			t = l->data;
 			ret = l, --ret;
 			for(; ret != limit; --ret) {
-				if(ret->data <= t) 
+				if(ret->data == t || cmp(ret->data, t)) 
 					break;
 				else
 					ret->next_node->data = ret->data;
@@ -156,9 +156,18 @@ public:
 			ret->next_node->data = t;
 		}
 	}
+	
+	template <class compare>
+	void sort(const compare& cmp) {
+		sort(finish->next_node, finish, cmp);
+	}
 
 	void sort() {
-		sort(finish->next_node, finish);
+		sort(finish->next_node, finish, tinyAr::less<T>());
+	}
+
+	void sort(iterator l, iterator r) {
+		sort(l, r, tinyAr::less<T>());
 	}
 private:
 	iterator finish;
