@@ -37,8 +37,9 @@ namespace tinyMemo
 		}
 	}
 	
-	template <class T>
-	void destroy(T* p){
+	template <class iterator>
+	void destroy(iterator p){
+		typedef typename traits<iterator>::value_type T;
 		p->~T();
 	}
 }

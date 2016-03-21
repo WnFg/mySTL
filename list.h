@@ -48,7 +48,7 @@ public:
 		return tmp;
 	}
 
-	self operator--() {
+	self& operator--() {
 		node = node->last_node;
 		return *this;
 	}
@@ -72,6 +72,76 @@ template <class T>
 class list
 {
 public:
-	typedef T value_type;
+	typedef __list_node<T> value_type;
+	typedef value_type* pointer;
+	typedef value_type& reference;
+	typedef __list_iterator<__list_node<T> > iterator;
+	
+	list() : __size(0), finish(new value_type) { 
+		finish->next_node = finish.node;
+		finish->last_node = finish.node;
+	}
+	
+	list(iterator l, iterator r) : __size(0), finish(new value_type) {
+		insert(finish, l, r);
+	}
+
+	iterator push_back(const T& val) {
+		return insert(finish, val);
+	}
+	
+	void pop_back() {
+		erase(iterator(finish->last_node));
+	}
+	
+	iterator begin() const {
+		return finish->next_node;
+	}
+	
+	iterator end() const {
+		return finish->last_node;
+	}
+	
+	int size() {
+		return __size;
+	}
+	
+	bool empty() {
+		return __size == 0;
+	}
+
+	iterator insert(iterator pos, const T& val) {
+		iterator ret(new value_type(val));
+		ret->last_node = pos->last_node;
+		ret->next_node = pos.node;
+		pos->last_node->next_node = ret.node;
+		pos->last_node = ret.node;
+		++__size;
+		return ret;
+	}
+	
+	int insert(iterator pos, iterator l, iterator r) {
+		int ret = 0;
+		--r;
+		while(r != l) {
+			insert(pos, r->data);
+			--r;
+			++ret;
+		}
+		insert(pos, r->data);
+		return ret + 1;
+	}
+
+	iterator erase(iterator pos) {
+		iterator tmp(pos->next_node);
+		pos->next_node->last_node = pos->last_node;
+		pos->last_node->next_node = pos->next_node;
+		tinyMemo::destroy(pos);
+		--__size;
+		return tmp;
+	}
+private:
+	iterator finish;
+	int __size;
 };
 #endif
