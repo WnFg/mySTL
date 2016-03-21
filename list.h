@@ -99,7 +99,7 @@ public:
 	}
 	
 	iterator end() const {
-		return finish->last_node;
+		return finish;
 	}
 	
 	int size() {
@@ -139,6 +139,26 @@ public:
 		tinyMemo::destroy(pos);
 		--__size;
 		return tmp;
+	}
+
+	void sort(iterator l, iterator r) {
+		iterator ret, limit(l->last_node);
+		T t;
+		for(; l != r; ++l) {
+			t = l->data;
+			ret = l, --ret;
+			for(; ret != limit; --ret) {
+				if(ret->data <= t) 
+					break;
+				else
+					ret->next_node->data = ret->data;
+			}
+			ret->next_node->data = t;
+		}
+	}
+
+	void sort() {
+		sort(finish->next_node, finish);
 	}
 private:
 	iterator finish;
