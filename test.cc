@@ -22,10 +22,12 @@ public:
 };
 int main()
 {
-	int er = 1;
-	tinyMemo::destroy(&er);
-	typedef int T;
-	const int w = 1;
-	const B<int>::pointer ww = &w;
+//	list<int> a;
+//	a.push_back(1);
+//	list<int>::iterator it = a.begin();
+//	cout << (tinyAr::getPreIterator(it) == a.end()) << endl;
+	cout << "asd" << endl;
+	int w[3] = {1, 2, 3};
+	cout << *(tinyAr::getPreIterator(w + 1)) << endl;
 	return 0;
 }

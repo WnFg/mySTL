@@ -30,9 +30,9 @@ namespace tinyAr
 	};
 	
 	template <class iterator>
-	typename iterator::iterator_type  // 获取迭代器类型
+	typename iterator::iterator_category  // 获取迭代器类型
 	getIteratorType(iterator) {
-		return iterator::iterator_type();
+		return typename iterator::iterator_category();
 	}
 
 	template <class iterator>
@@ -51,6 +51,15 @@ namespace tinyAr
 		return r;
 	}
 
+	template <class iterator>
+	iterator getPreIterator(iterator it, bidirectional_iterator_tag) {
+		return --it;
+	}
+
+	template <class iterator>
+	iterator getPreIterator(iterator it) {
+		return getPreIterator(it, getIteratorType(it));
+	}
 }
 
 #endif
