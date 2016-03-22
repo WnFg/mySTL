@@ -193,7 +193,7 @@ public:
 		lt.clear();
 		return __size;
 	}*/
-
+	
 	void clear() {
 		erase(begin(), end());
 	}
