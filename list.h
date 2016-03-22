@@ -75,7 +75,8 @@ public:
 	typedef value_type* pointer;
 	typedef value_type& reference;
 	typedef __list_iterator<__list_node<T> > iterator;
-	
+	typedef list<T> self;
+
 	list() : __size(0), finish(new value_type) { 
 		finish->next_node = finish.node;
 		finish->last_node = finish.node;
@@ -97,10 +98,18 @@ public:
 		erase(iterator(finish->last_node));
 	}
 	
+	T& front() {
+		return begin()->data;
+	}
+
+	T& back() {
+		return (--end())->data;
+	}
+
 	iterator begin() const {
 		return finish->next_node;
 	}
-	
+
 	iterator end() const {
 		return finish;
 	}
@@ -145,14 +154,50 @@ public:
 		return tmp;
 	}
 	
-	void clear() {
-		iterator it = finish->next_node;
-		while(it != finish) {
-			erase(it);
-			++it;
+	iterator erase(iterator l, iterator r) {
+		while(l != r) {
+			if(l != finish)
+				erase(l++);
+			else
+				++l;
 		}
+		return r;
 	}
+	
+	int erase(iterator l, iterator r, const T& val) {
+		int ret = 0;
+		while(l != r) {
+			if(l == finish) { ++l; continue; }
 
+			if(l->data == val) {
+				erase(l++);
+				++ret;
+			}else 
+				++l;
+		}
+		return ret;
+	}
+	
+	int erase(const T& val) {
+		return erase(begin(), end(), val);
+	}
+	
+	/*int merge(self& lt) {
+		self::iterator back_it = --lt.end();
+		self::iterator front_it = ++lt.end();  
+		front_it->last = finish->last_node;
+		finish->last_node->next_node = front_it.node;
+		back_it->next_node = finish.node;
+		finish->last_node = back_it.node;
+		__size += lt.size();
+		lt.clear();
+		return __size;
+	}*/
+
+	void clear() {
+		erase(begin(), end());
+	}
+	
 	template <class compare>
 	void sort(iterator l, iterator r, const compare& cmp) {
 		iterator ret, limit(l->last_node);

@@ -14,20 +14,27 @@ void f(T&) {
 	cout << 2 << endl;
 }
 
-class A
+/*class 
 {
 public:
 	A() : a(123) {}
 	int a;	
-};
+};*/
 int main()
 {
-//	list<int> a;
-//	a.push_back(1);
-//	list<int>::iterator it = a.begin();
-//	cout << (tinyAr::getPreIterator(it) == a.end()) << endl;
 	cout << "asd" << endl;
 	int w[3] = {1, 2, 3};
 	cout << *(tinyAr::getPreIterator(w + 1)) << endl;
+	list<int> lt;
+	for(int i = 0; i < 10; i++) {
+		lt.push_back(i);
+	}
+
+	lt.sort(tinyAr::greater<int>());
+	for(list<int>::iterator it = lt.begin(); it != lt.end(); ++it) {
+		cout << it->data << endl;
+	}
+
+	cout << lt.front() << endl;
 	return 0;
 }

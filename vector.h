@@ -30,8 +30,9 @@ public:
 		alloc.deallocate(start, capacity_size()); 
 	}
 
-	iterator begin() { return start; }
-	iterator end() { return finish; }
+	iterator begin() const { return start; }
+	iterator end() const { return finish; }
+	
 	T& operator[](int n) { return *(start + n); }
 	int size() { return finish - start; }
 	
