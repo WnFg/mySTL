@@ -21,8 +21,8 @@ struct deque_iterator : public iterator_template<T>
 	deque_iterator(pointer p1, pointer p2, int m) : base(p1), head(p2), mod(m) {}
 
 	self& operator++() {
-		node = head + (node - head + 1)%mod;
-		return *this;
+		//node = head + (node - head + 1)%mod;
+		return shift(1);
 	}
 
 	self operator++(int) {
@@ -32,14 +32,27 @@ struct deque_iterator : public iterator_template<T>
 	}
 
 	self& operator--() {
-		node = head + (node - head - 1 + mod)%mod;
-		return *this;
+		//node = head + (node - head - 1 + mod)%mod;
+		return shift(-1);
 	}
 
 	self operator--(int) {
 		self tmp = *this;
 		--*this;
 		return tmp;
+	}
+
+	inline self& shift(int x) {
+		node = head + (node - head + x + mod) % mod;
+		return *this;
+	}
+
+	int operator- (const self& it) {
+		return (node - it.node + mod) % mod;
+	}
+
+	bool operator== (const self& it) const {
+		return node == it.node;
 	}
 };
 
@@ -49,34 +62,31 @@ class deque
 public:
 	typedef T value_type;
 	typedef T* pointer;
-	typedef T* iterator;
+	typedef deque_iterator<T> iterator;
 	typedef T& reference;
 	typedef const T* const_pointer;
 	typedef const T& const_reference;
 
-	deque() : start(NULL), finish(NULL), 
-			  capacity(0), size_valueType(sizeof(T)) {}
+	deque() : capacity(0), size_valueType(sizeof(T)) {}
 	
 	iterator begin() { return start; }
 	iterator end() { return finish; }
 	
-	inline iterator getIterator(int x) {
-		return head + ((start - head + x) % capacity);
+	inline void set_iterator(iterator& it, pointer node) {
+		it.node = node, it.head = head, it.mod = capacity;
 	}
 
 	T& operator[] (int x) {
-		return *getIterator(x);
-	}
-
-	inline int getDiff(iterator l, iterator r) {
-		return (r - l + capacity)%capacity;
+		iterator it = start;
+		it.shift(x);
+		return *it;
 	}
 
 	inline bool isFull() {
-		return start == NULL || getDiff(start, finish) == capacity - 1;
+		return start == NULL || finish - start == capacity - 1;
 	}
 
-	int size() { return getDiff(start, finish); }
+	int size() { return finish - start; }
 	
 	pointer allocate_and_copy(int n, iterator l, iterator r) {
 		pointer address = (pointer)alloc.allocate(n);
@@ -86,10 +96,15 @@ public:
 	
 	void copy_and_update() {
 		capacity <<= 1;
+		int oldSize = size();
 		iterator new_start = allocate_and_copy(capacity, start, finish);
 		tinyMemo::destroy(start, finish);
-		alloc.deallocate()
+		alloc.deallocate(head, capacity / 2);
+		set_iterator(start, new_start.node);
+		set_iterator(finish, new_start.shift(oldSize).node);
+		head = start;
 	}
+
 	void push_front();
 	void pop_back();
 	void pop_front();
