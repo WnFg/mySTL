@@ -6,13 +6,17 @@
 #include "iterator_template.h"
 
 template <class T>
-struct deque_iterator : public iterator_template<T> 
+struct deque_iterator : public iterator_template<tinyAr::random_access_iterator_tag, T> 
 {
-	typedef tinyAr::random_access_iterator_tag iterator_cat;
-	typedef iterator_template<T> base;
+	typedef iterator_template<tinyAr::random_access_iterator_tag, T> base;
+	using typename base::value_type;
+	using typename base::pointer;
+	using typename base::reference;
+	using typename base::iterator_category;
+	using typename base::difference_type;
+
 	typedef deque_iterator<T> self;
 
-	using typename base::pointer;
 	using base::node;
 	pointer head;
 	int mod;
@@ -54,6 +58,10 @@ struct deque_iterator : public iterator_template<T>
 	bool operator== (const self& it) const {
 		return node == it.node;
 	}
+
+	bool operator!= (const self& it) const {
+		return node != it.node;
+	}
 };
 
 template <class T>
@@ -67,7 +75,11 @@ public:
 	typedef const T* const_pointer;
 	typedef const T& const_reference;
 
-	deque() : capacity(0), size_valueType(sizeof(T)) {}
+	deque() : capacity(1) {
+		head = alloc.allocate(1);
+		set_iterator(start, head);
+		finish = start;
+	}
 	
 	iterator begin() { return start; }
 	iterator end() { return finish; }
@@ -83,7 +95,7 @@ public:
 	}
 
 	inline bool isFull() {
-		return start == NULL || finish - start == capacity - 1;
+		return finish - start == capacity - 1;
 	}
 
 	int size() { return finish - start; }
@@ -97,23 +109,39 @@ public:
 	void copy_and_update() {
 		capacity <<= 1;
 		int oldSize = size();
-		iterator new_start = allocate_and_copy(capacity, start, finish);
+		pointer new_head = allocate_and_copy(capacity, start, finish);
 		tinyMemo::destroy(start, finish);
 		alloc.deallocate(head, capacity / 2);
-		set_iterator(start, new_start.node);
-		set_iterator(finish, new_start.shift(oldSize).node);
-		head = start;
+		// 更新
+		head = new_head;
+		set_iterator(start, head);
+		set_iterator(finish, head + oldSize);
+	}
+	
+	void push_back(const_reference val) {
+		if(isFull()) 
+			copy_and_update();	
+		*finish++ = val;
 	}
 
-	void push_front();
-	void pop_back();
-	void pop_front();
+	void push_front(const_reference val) {
+		if(isFull())
+			copy_and_update();
+		*--start = val;
+	}
+
+	void pop_back() {
+		tinyMemo::destroy(--finish);
+	}
+	
+	void pop_front() {
+		tinyMemo::destroy(start++);
+	}
 	
 private:
 	iterator start;
 	iterator finish;
-	iterator head;
-	int size_valueType;
+	pointer head;
 	std::allocator<T> alloc;
 	int capacity;
 };

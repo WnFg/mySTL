@@ -3,12 +3,16 @@
 
 #include "algorithm.h"
 
-template <class T>
+template <class Category, class T, class Distance = int,
+		  class Pointer = T*, class Reference = T&>
 struct iterator_template
 {
 	typedef T value_type;
-	typedef T* pointer;
-	
+	typedef Pointer pointer;
+	typedef Category iterator_category;
+	typedef Reference reference;
+	typedef Distance difference_type;
+
 	pointer node;
 
 	T& operator*() const {
