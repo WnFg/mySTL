@@ -51,7 +51,7 @@ struct deque_iterator : public iterator_template<tinyAr::random_access_iterator_
 		return *this;
 	}
 
-	int operator- (const self& it) {
+	int operator- (const self& it) const {
 		return (node - it.node + mod) % mod;
 	}
 
@@ -81,6 +81,11 @@ public:
 		finish = start;
 	}
 	
+	deque(const iterator& l, const iterator& r) : capacity(0) {
+		copy_and_update(r - l + 1, l, r);
+	}
+
+	~deque() { clear();}
 	iterator begin() { return start; }
 	iterator end() { return finish; }
 	
@@ -98,21 +103,23 @@ public:
 		return finish - start == capacity - 1;
 	}
 
-	int size() { return finish - start; }
+	inline int size() { return finish - start; }
 	
-	pointer allocate_and_copy(int n, iterator l, iterator r) {
+	pointer allocate_and_copy(int n, const iterator& l, const iterator& r) {
 		pointer address = (pointer)alloc.allocate(n);
 		std::uninitialized_copy(l, r, address);
 		return address;
 	}
 	
-	void copy_and_update() {
-		capacity <<= 1;
+	void copy_and_update(int new_capacity, const iterator& l, const iterator& r) {
 		int oldSize = size();
-		pointer new_head = allocate_and_copy(capacity, start, finish);
-		tinyMemo::destroy(start, finish);
-		alloc.deallocate(head, capacity / 2);
+		pointer new_head = allocate_and_copy(new_capacity, l, r);
+		if(capacity > 0 && l == start) {
+			tinyMemo::destroy(start, finish);
+			alloc.deallocate(head, capacity);
+		}
 		// 更新
+		capacity = new_capacity;
 		head = new_head;
 		set_iterator(start, head);
 		set_iterator(finish, head + oldSize);
@@ -120,13 +127,13 @@ public:
 	
 	void push_back(const_reference val) {
 		if(isFull()) 
-			copy_and_update();	
+			copy_and_update(capacity << 1, start, finish);	
 		*finish++ = val;
 	}
 
 	void push_front(const_reference val) {
 		if(isFull())
-			copy_and_update();
+			copy_and_update(capacity << 1, start, finish);
 		*--start = val;
 	}
 
@@ -137,7 +144,17 @@ public:
 	void pop_front() {
 		tinyMemo::destroy(start++);
 	}
-	
+
+	bool empty() {
+		return size() == 0;
+	}
+
+	void clear() {
+		while(!empty()) {
+			pop_back();
+		}
+	}
+
 private:
 	iterator start;
 	iterator finish;
@@ -145,6 +162,5 @@ private:
 	std::allocator<T> alloc;
 	int capacity;
 };
-
 
 #endif
