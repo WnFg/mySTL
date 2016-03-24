@@ -1,11 +1,18 @@
+#include "queue.h"
 #include <iostream>
-#include "list.h"
 using namespace std;
+
+template <class T>
+class A{};
+
+template <class T = int>
+void f() {};
+
+template <class T, class T1 = A<T> >
+class B{};
+
 int main()
 {
-	__list_node<int> node(5);
-	__list_iterator<__list_node<int> > it(&node);
-	cout << it->data << endl;
-	cout << node.data << endl;
+	B<int> a;
 	return 0;
 }

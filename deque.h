@@ -50,18 +50,25 @@ struct deque_iterator : public iterator_template<tinyAr::random_access_iterator_
 		node = head + (node - head + x + mod) % mod;
 		return *this;
 	}
+	
+	inline self operator+ (int x) {
+		pointer p = head + (node - head + x + mod) % mod;
+		return deque_iterator(p, head, mod);
+	}
 
-	int operator- (const self& it) const {
+	inline int operator- (const self& it) const {
 		return (node - it.node + mod) % mod;
 	}
 
-	bool operator== (const self& it) const {
+	inline bool operator== (const self& it) const {
 		return node == it.node;
 	}
 
-	bool operator!= (const self& it) const {
+	inline bool operator!= (const self& it) const {
 		return node != it.node;
 	}
+
+	
 };
 
 template <class T>

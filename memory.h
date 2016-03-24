@@ -5,6 +5,7 @@
 #include <new>
 #include <cstdlib>
 #include <memory>
+#include "algorithm.h"
 
 namespace tinyMemo
 {
@@ -13,6 +14,7 @@ namespace tinyMemo
 	{
 	public:
 		typedef typename it::value_type value_type;
+		typedef typename it::iterator_category iterator_category;
 	};
 
 	template <class it>
@@ -20,6 +22,7 @@ namespace tinyMemo
 	{
 	public:
 		typedef it value_type;
+		typedef tinyAr::random_access_iterator_tag iterator_category;
 	};
 
 	template <class it>
@@ -27,6 +30,7 @@ namespace tinyMemo
 	{
 	public:
 		typedef it value_type;
+		typedef tinyAr::random_access_iterator_tag iterator_category;
 	};
 
 	template <class iterator>

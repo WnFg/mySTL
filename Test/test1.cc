@@ -1,13 +1,24 @@
 #include <iostream>
-using namespace std;
+#include "vector.h"
+#include "heap.h"
 
-int b = 213;
-int f();
-
+vector<int> v;
 int main()
 {
-	extern int a;
-	cout << a << endl;
-	f();
+	/*v.push_back(10);
+	for(int i = 0; i < 4; i++) {
+		v.push_back(i);
+	}
+	*/
+	for(int i = 10; i > 0; --i) {
+		v.push_back(i);
+	}
+	for(int i = 0; i < 10; i++) {
+		std::cout << v[i] << std::endl;
+	}
+	build(v.begin(), v.end());
+	for(int i = 0; i < 10; i++) {
+		std::cout << v[i] << std::endl;
+	}
 	return 0;
 }

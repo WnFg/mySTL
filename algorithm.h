@@ -12,6 +12,13 @@ namespace tinyAr
 	struct random_access_iterator_tag : public bidirectional_iterator_tag {}; // 可随机访问
 	
 	template <class T>
+	void swap(T& a, T& b) {
+		T ret = b;
+		b = a;
+		a = ret;
+	}
+	
+	template <class T>
 	class less
 	{
 	public:
