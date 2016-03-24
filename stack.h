@@ -3,9 +3,21 @@
 
 #include "deque.h"
 
+template <class T>
+bool operator== (const T& a, const T& b) {
+	return a.seq == b.seq;
+}
+
+template <class T>
+bool operator!= (const T& a, const T& b) {
+	return a.seq != b.seq;
+}
+
 template <class T, class Sequence = deque<T> >
 class stack
 {
+	friend bool operator==<> (const stack& a, const stack& b);
+	friend bool operator!=<> (const stack& a, const stack& b);
 public:
 	typedef T value_type;
 	typedef T* pointer;
@@ -15,7 +27,7 @@ public:
 	typedef typename Sequence::iterator iterator;
 	
 	stack() : seq(new Sequence) {}
-	~stack() { clear(); delete seq;}
+	~stack() { seq->Sequence();}
 
 	T& back() {
 		return (*seq)[seq->size() - 1];
@@ -31,6 +43,10 @@ public:
 
 	void push(const T& val) {
 		seq->push_back(val);
+	}
+	
+	bool empty() {
+		return size() == 0;
 	}
 
 	void clear() {
