@@ -1,18 +1,20 @@
-#include "queue.h"
 #include <iostream>
-using namespace std;
+#include "algorithm.h"
 
 template <class T>
-class A{};
-
-template <class T = int>
-void f() {};
+class A{
+public:
+	typedef T value_type;	
+};
 
 template <class T, class T1 = A<T> >
-class B{};
+class B{
+
+};
 
 int main()
 {
-	B<int> a;
+	
+	B<int> b;
 	return 0;
 }
