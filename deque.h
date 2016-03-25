@@ -92,7 +92,8 @@ public:
 		copy_and_update(r - l + 1, l, r);
 	}
 
-	~deque() { clear();}
+	~deque() { clear(); alloc.deallocate(head, capacity);}
+	
 	iterator begin() { return start; }
 	iterator end() { return finish; }
 	

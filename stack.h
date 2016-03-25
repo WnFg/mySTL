@@ -27,7 +27,7 @@ public:
 	typedef typename Sequence::iterator iterator;
 	
 	stack() : seq(new Sequence) {}
-	~stack() { seq->Sequence();}
+	~stack() { delete seq;}
 
 	T& back() {
 		return (*seq)[seq->size() - 1];

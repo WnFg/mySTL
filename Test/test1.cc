@@ -1,6 +1,6 @@
 #include <iostream>
-#include "vector.h"
-#include "heap.h"
+#include "../vector.h"
+#include "../heap.h"
 
 vector<int> v;
 int main()
@@ -13,12 +13,13 @@ int main()
 	for(int i = 10; i > 0; --i) {
 		v.push_back(i);
 	}
-	for(int i = 0; i < 10; i++) {
+	/*for(int i = 0; i < 10; i++) {
 		std::cout << v[i] << std::endl;
-	}
+	}*/
 	build(v.begin(), v.end());
 	for(int i = 0; i < 10; i++) {
 		std::cout << v[i] << std::endl;
 	}
+	std::cout << top(v.begin(), v[0]) << std::endl;
 	return 0;
 }

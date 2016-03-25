@@ -22,7 +22,7 @@ namespace tinyMemo
 	{
 	public:
 		typedef it value_type;
-		typedef tinyAr::random_access_iterator_tag iterator_category;
+		typedef typename tinyAr::random_access_iterator_tag iterator_category;
 	};
 
 	template <class it>
@@ -30,7 +30,7 @@ namespace tinyMemo
 	{
 	public:
 		typedef it value_type;
-		typedef tinyAr::random_access_iterator_tag iterator_category;
+		typedef typename tinyAr::random_access_iterator_tag iterator_category;
 	};
 
 	template <class iterator>

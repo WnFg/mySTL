@@ -26,7 +26,7 @@ public:
 	typedef const T& const_reference;
 
 	queue() : seq(new Sequence) {}
-	~queue() { seq->~Sequence();}
+	~queue() { delete seq;}
 	void push(const T& val) {
 		seq->push_back(val);
 	}
