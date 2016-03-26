@@ -91,7 +91,7 @@ public:
 		adjust_back(seq->begin(), seq->size(), cmp);
 	}
 
-	T top() {
+	const_reference top() const {
 		return __top(seq->begin(), T());	
 	}
 

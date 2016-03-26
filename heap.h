@@ -84,7 +84,7 @@ void erase(iterator first, iterator last, int order, const compare& cmp) {
 }
 
 template <class iterator, class value_type>
-value_type __top(iterator first, value_type) {
+const value_type& __top(iterator first, value_type) {
 	return *first;
 }
 
