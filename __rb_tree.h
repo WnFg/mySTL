@@ -70,8 +70,9 @@ public:
 	int size() {
 		return __size; 
 	}
-	
-	void left_roate(ptr_node __root) {
+
+protected:
+	void left_roate(ptr_node& __root) {
 		ptr_node node = __root;
 		if(node != root) {
 			bool left = isLchild(node);
@@ -89,7 +90,7 @@ public:
 		__root->lchild = node;
 	}
 	
-	void right_roate(ptr_node __root) {
+	void right_roate(ptr_node& __root) {
 		ptr_node node = __root;
 		if(node != root) {
 			bool left = isLchild(node);
@@ -172,8 +173,10 @@ public:
 				return ;
 			}
 		}else {
-			if(gparent->lchild->color == rb_tree_red)
+			if(gparent->lchild->color == rb_tree_red) {
 				insert_case_a(gparent);
+				std::cout << "cvdf" << std::endl;
+			}
 			else {
 				std::cout << "fixup" << std::endl;
 				insert_case_b(gparent, parent, z);
@@ -182,40 +185,7 @@ public:
 		}
 	}
 
-	bool rb_insert(const value_type& val) {
-		if(__size == 0) {
-			root = new node_type(val, nil_node);
-			root->color = rb_tree_black;
-			__size = 1;
-			return true;
-		}
 
-		node_type* node = new node_type(val, nil_node);
-		node->color = rb_tree_red;
-
-		node_type* parent;
-		node_type** ptr_ptr_node = &root;
-		while(*ptr_ptr_node != nil_node) {
-			if(**ptr_ptr_node == *node) 
-				return false;
-			
-			parent = *ptr_ptr_node;
-			if(*node < **ptr_ptr_node) {
-				ptr_ptr_node = &(*ptr_ptr_node)->lchild;
-			}else {
-				ptr_ptr_node = &(*ptr_ptr_node)->rchild;
-			}
-		}
-	//	std::cout << parent->key << std::endl;
-		*ptr_ptr_node = node;
-		node->parent = parent;
-		if(parent->color == rb_tree_red) {
-			rb_insert_fixup(node);
-		}
-		__size++;
-		return true;
-	}
-	
 	void roate(node_type* node, bool left) {
 		if(left)
 			left_roate(node);
@@ -274,11 +244,20 @@ public:
 			if(getChild(brother, !left)->color == rb_tree_red)
 				__rb_delete_case_4(parent, x, left);
 			else if(getChild(brother, left)->color == rb_tree_red)
-				__insert_case_b_3(parent, x, left);
+				__rb_delete_case_3(parent, x, left);
 			else 
-				__insert_case_b_2(parent, left);	
+				__rb_delete_case_2(parent, left);	
 		}else 
-			__rb_delete_case_4(parent, x, left);
+			__rb_delete_case_1(parent, x, left);
+	}
+
+public:
+	ptr_node getRoot() {
+		return root;
+	}
+	
+	ptr_node getNil() {
+		return nil_node;
 	}
 
 	void rb_delete(node_type* node) {
@@ -304,11 +283,46 @@ public:
 			rb_delete_fixup(child);
 		delete x;
 	}
+
+	bool rb_insert(const value_type& val) {
+		if(__size == 0) {
+			root = new node_type(val, nil_node);
+			root->color = rb_tree_black;
+			__size = 1;
+			return true;
+		}
+
+		node_type* node = new node_type(val, nil_node);
+		node->color = rb_tree_red;
+
+		node_type* parent;
+		node_type** ptr_ptr_node = &root;
+		while(*ptr_ptr_node != nil_node) {
+			if(**ptr_ptr_node == *node) 
+				return false;
+			
+			parent = *ptr_ptr_node;
+			if(*node < **ptr_ptr_node) {
+				ptr_ptr_node = &(*ptr_ptr_node)->lchild;
+			}else {
+				ptr_ptr_node = &(*ptr_ptr_node)->rchild;
+			}
+		}
+	//	std::cout << parent->key << std::endl;
+		*ptr_ptr_node = node;
+		node->parent = parent;
+		if(parent->color == rb_tree_red) {
+			rb_insert_fixup(node);
+		}
+		__size++;
+		return true;
+	}
+	
+protected:
+	int __size;
 	node_type* root;
 	node_type* nil_node;
-protected:
-	compare cmp;
-	int __size;
+
 };
 
 #endif
