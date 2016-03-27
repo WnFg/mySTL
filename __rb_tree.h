@@ -268,11 +268,8 @@ protected:
 		}else {
 			if(gparent->lchild->color == rb_tree_red) {
 				insert_case_a(gparent);
-	//			std::cout << "cvdf" << std::endl;
 			}
 			else {
-	//			std::cout << "fixup" << std::endl;
-	//			std::cout << z->key << " vv"<< std::endl;
 				insert_case_b(gparent, parent, z);
 				return ;
 			}
@@ -433,7 +430,7 @@ public:
 			rb_delete_fixup(child);
 		delete x;
 	}
-
+	
 	bool rb_insert(const value_type& val) {
 		if(__size == 0) {
 			root = new node_type(val, nil_node);
