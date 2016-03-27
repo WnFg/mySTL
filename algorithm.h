@@ -9,6 +9,22 @@ namespace tinyAr
 	struct bidirectional_iterator_tag : public forward_iterator_tag {}; // 可双向移动，支持++，--
 	struct random_access_iterator_tag : public bidirectional_iterator_tag {}; // 可随机访问
 	
+	template <class T1, class T2>
+	struct pair
+	{
+		T1 first;
+		T2 second;
+		
+		pair() {}
+		pair(const T1& a, const T2& b) : first(a), second(b) {}
+		
+		bool operator< (const pair<T1, T2>& x) const {
+			if(first == x.first)
+				return second < x.second;
+			return first < x.first;
+		}
+	};
+	
 	template <class T>
 	void swap(T& a, T& b) {
 		T ret = b;

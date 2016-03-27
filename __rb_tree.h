@@ -70,12 +70,12 @@ public:
 	{}
 	
 	self& operator++ () {
-		std::cout << "~~~~~~~~~~" << std::endl;
+//		std::cout << "~~~~~~~~~~" << std::endl;
 		if(node->rchild != nil_node) {
 			node = node_type::leftmost_node(node->rchild, nil_node);
 		}else {
 			while(node->parent != NULL && !isLchild()) {
-				std::cout << (node->key) << std::endl;
+			//	std::cout << (node->key) << std::endl;
 				node = node->parent;
 			}
 			if(node->parent != NULL) 
@@ -83,7 +83,7 @@ public:
 			else
 				node = nil_node;
 		}
-		std::cout << "~~~~~~~~~" << std::endl;
+	//	std::cout << "~~~~~~~~~" << std::endl;
 		return *this;
 	}
 
@@ -134,12 +134,24 @@ public:
 	typedef node_type* ptr_node;
 	typedef rb_tree_iterator<node_type> iterator;
 	typedef T value_type;
-	
+	typedef tinyAr::pair<ptr_node, bool> pair_type;
+
 	rb_tree() : nil_node(new node_type), __size(0) {
 		nil_node->color = rb_tree_black;
 		iterator_nil.nil_node = iterator_nil.node = nil_node;
 	}
 	
+	~rb_tree() { clear();}
+
+	void clear() {
+		iterator it(root, nil_node);
+		while(it != iterator_nil) {
+			delete &(*it++);
+		}
+		root = NULL;
+		__size = 0;
+	}
+
 	int size() {
 		return __size; 
 	}
@@ -210,8 +222,8 @@ protected:
 	void __insert_case_b_1(node_type* gparent) {
 //		std::cout << "case_b_1" << std::endl;
 		left_roate(gparent);
-		std::cout << (gparent->key) << " !!" << std::endl;
-		std::cout << (root->rchild->key) << " ##" << std::endl; 
+	//	std::cout << (gparent->key) << " !!" << std::endl;
+	//	std::cout << (root->rchild->key) << " ##" << std::endl; 
 		gparent->lchild->color = rb_tree_red;
 		gparent->color = rb_tree_black;
 	
@@ -259,8 +271,8 @@ protected:
 	//			std::cout << "cvdf" << std::endl;
 			}
 			else {
-				std::cout << "fixup" << std::endl;
-				std::cout << z->key << " vv"<< std::endl;
+	//			std::cout << "fixup" << std::endl;
+	//			std::cout << z->key << " vv"<< std::endl;
 				insert_case_b(gparent, parent, z);
 				return ;
 			}
@@ -331,21 +343,64 @@ protected:
 		}else 
 			__rb_delete_case_1(parent, x, left);
 	}
+	
+	pair_type __find(const value_type& val) const {
+		pair_type tmp(NULL, false);  
+		ptr_node node = root;
+		while(node != nil_node && val != node->key) {
+			if(val < node->key) {
+				tmp.first = node;
+				tmp.second = true;
+				node = node->lchild;
+			}
+			else {
+				tmp.first = node;
+				tmp.second = false;
+				node = node->rchild;
+			}
+		}
+		return tmp;
+	}
 
+	iterator __bound(const value_type& val, bool mark) {
+		pair_type tmp = __find(val);
+		if(tmp.first == NULL)
+			return iterator(root, nil_node);
+		if(tmp.second) {
+			if(tmp.first->lchild->key == val) {
+				return iterator(tmp.first->lchild, nil_node);
+			}else {
+				if(mark)
+					return iterator(tmp.first, nil_node);
+				else
+					return --iterator(tmp.first, nil_node);
+			}
+		}else {
+			if(tmp.first->rchild->key == val) {
+				return iterator(tmp.first->rchild, nil_node);
+			}else {
+				if(mark)
+					return ++iterator(tmp.first, nil_node);
+				else
+					return iterator(tmp.first, nil_node);
+			}
+		}
+	}
+	
 public:
-	ptr_node getRoot() {
+	inline ptr_node getRoot() {
 		return root;
 	}
 	
-	ptr_node getNil() {
+	inline ptr_node getNil() {
 		return nil_node;
 	}
 	
-	iterator begin() {
+	inline iterator begin() {
 		return iterator(root, nil_node);
 	}
 	
-	iterator end() {
+	inline iterator end() {
 		return iterator_nil;
 	}
 
@@ -423,7 +478,26 @@ public:
 		}
 		return iterator(node, nil_node);
 	}
+	
+	inline iterator lower_bound(const value_type& val) {
+		return __bound(val, false);
+	}
 
+	inline iterator upper_bound(const value_type& val) {
+		return __bound(val, true);
+	}
+
+	inline void erase(iterator it) {
+		rb_delete(&(*it));
+	}
+
+	bool erase(const value_type& val) {
+		iterator it = find(val);
+		if(it == iterator_nil)
+			return false;
+		erase(it);
+		return true;
+	}
 protected:
 	int __size;
 	ptr_node root;
