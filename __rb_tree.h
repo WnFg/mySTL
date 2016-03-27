@@ -3,6 +3,7 @@
 
 #include "algorithm.h"
 #include <iostream>
+#include "iterator_template.h"
 
 typedef bool rb_tree_color;
 const rb_tree_color rb_tree_black = false;
@@ -48,24 +49,96 @@ struct rb_tree_node_base
 };
 
 template <class node_type>
-class rb_tree_iterator
+class rb_tree_iterator : public iterator_template<tinyAr::bidirectional_iterator_tag, node_type>
 {
 public:
-	rb_tree_iterator() : node(NULL) {}
-	node_type* node;
+	typedef iterator_template<tinyAr::bidirectional_iterator_tag, node_type> base;
+
+	using typename base::pointer;
+	using typename base::value_type;
+	using typename base::reference;
+	using typename base::iterator_category;
+	using typename base::difference_type;
+	using base::node;
+	
+	pointer nil_node;
+
+	typedef rb_tree_iterator<value_type> self;
+	
+	rb_tree_iterator() : base(NULL), nil_node(NULL) {}
+	rb_tree_iterator(pointer p, pointer end) : base(p), nil_node(end)
+	{}
+	
+	self& operator++ () {
+		std::cout << "~~~~~~~~~~" << std::endl;
+		if(node->rchild != nil_node) {
+			node = node_type::leftmost_node(node->rchild, nil_node);
+		}else {
+			while(node->parent != NULL && !isLchild()) {
+				std::cout << (node->key) << std::endl;
+				node = node->parent;
+			}
+			if(node->parent != NULL) 
+				node = node->parent;
+			else
+				node = nil_node;
+		}
+		std::cout << "~~~~~~~~~" << std::endl;
+		return *this;
+	}
+
+	self operator++ (int) {
+		self tmp = *this;
+		++*this;
+		return tmp;
+	}
+
+	self& operator-- () {
+		if(node->lchild != nil_node) {
+			node = node_type::rightmost_node(node->lchild, nil_node);
+		}else {
+			while(node->parent != NULL && isLchild()) {
+				node = node->parent;
+			}
+			if(node->parent != NULL) 
+				node = node->parent;
+			else
+				node = nil_node;
+		}
+		return *this;
+	}
+
+	self operator-- (int) {
+		self tmp = *this;
+		++*this;
+		return tmp;
+	}
+
+	bool operator== (const self& a) const {
+		return node == a.node;
+	}
+
+	bool operator!= (const self& a) const {
+		return node != a.node;
+	}
+protected:
+	inline bool isLchild() {
+		return node->parent->lchild == node;
+	}
 };
 
-template <class T, class compare = tinyAr::less<T> >
+template <class T, class node_type = rb_tree_node_base<T> >
 class rb_tree
 {
 public:
-	typedef rb_tree_node_base<T> node_type;
 	typedef node_type* ptr_node;
 	typedef rb_tree_iterator<node_type> iterator;
 	typedef T value_type;
 	
-
-	rb_tree() : nil_node(new node_type), __size(0) {nil_node->color = rb_tree_black;}
+	rb_tree() : nil_node(new node_type), __size(0) {
+		nil_node->color = rb_tree_black;
+		iterator_nil.nil_node = iterator_nil.node = nil_node;
+	}
 	
 	int size() {
 		return __size; 
@@ -74,38 +147,42 @@ public:
 protected:
 	void left_roate(ptr_node& __root) {
 		ptr_node node = __root;
-		if(node != root) {
-			bool left = isLchild(node);
-			if(left)
-				node->parent->lchild = node->rchild;
-			else
-				node->parent->rchild = node->rchild;
+		__root = __root->rchild;
+		if(node == root) {
+			root = __root;
+			__root->parent = NULL;
 		}else {
-			root = node->rchild;
+			bool left = isLchild(node);
+			__root->parent = node->parent;
+			if(left)
+				node->parent->lchild = __root;
+			else
+				node->parent->rchild = __root;
 		}
-		__root = node->rchild;
 		node->rchild = __root->lchild;
-		__root->parent = node->parent;
-		node->parent = __root;
+		__root->lchild->parent = node;
 		__root->lchild = node;
+		node->parent = __root;
 	}
 	
 	void right_roate(ptr_node& __root) {
 		ptr_node node = __root;
-		if(node != root) {
-			bool left = isLchild(node);
-			if(left)
-				node->parent->lchild = node->lchild;
-			else
-				node->parent->rchild = node->lchild;
+		__root = __root->lchild;
+		if(node == root) {
+			root = __root;
+			__root->parent = NULL;
 		}else {
-			root = node->lchild;
+			bool left = isLchild(node);
+			__root->parent = node->parent;
+			if(left)
+				node->parent->lchild = __root;
+			else
+				node->parent->rchild = __root;
 		}
-		__root = node->lchild;
 		node->lchild = __root->rchild;
-		__root->parent = node->parent;
-		node->parent = __root;
+		__root->rchild->parent = node;
 		__root->rchild = node;
+		node->parent = __root;
 	}
 	
 	inline bool isLchild(node_type* node) {
@@ -115,6 +192,7 @@ protected:
 	void insert_case_a(node_type* new_z) {
 		new_z->lchild->color = rb_tree_black;
 		new_z->rchild->color = rb_tree_black;
+		new_z->color = rb_tree_red;
 		rb_insert_fixup(new_z);
 	}
 	
@@ -130,10 +208,13 @@ protected:
 	}
 	
 	void __insert_case_b_1(node_type* gparent) {
-		std::cout << "case_b_1" << std::endl;
+//		std::cout << "case_b_1" << std::endl;
 		left_roate(gparent);
+		std::cout << (gparent->key) << " !!" << std::endl;
+		std::cout << (root->rchild->key) << " ##" << std::endl; 
 		gparent->lchild->color = rb_tree_red;
 		gparent->color = rb_tree_black;
+	
 	}
 	
 	void __insert_case_b_0(node_type* parent) {
@@ -175,16 +256,16 @@ protected:
 		}else {
 			if(gparent->lchild->color == rb_tree_red) {
 				insert_case_a(gparent);
-				std::cout << "cvdf" << std::endl;
+	//			std::cout << "cvdf" << std::endl;
 			}
 			else {
 				std::cout << "fixup" << std::endl;
+				std::cout << z->key << " vv"<< std::endl;
 				insert_case_b(gparent, parent, z);
 				return ;
 			}
 		}
 	}
-
 
 	void roate(node_type* node, bool left) {
 		if(left)
@@ -259,9 +340,22 @@ public:
 	ptr_node getNil() {
 		return nil_node;
 	}
+	
+	iterator begin() {
+		return iterator(root, nil_node);
+	}
+	
+	iterator end() {
+		return iterator_nil;
+	}
 
 	void rb_delete(node_type* node) {
 		--__size;
+		if(__size == 0) {
+			delete root;
+			root = NULL;
+			return ;
+		}
 		node_type* x;
 		if(node->lchild == nil_node || node->rchild == nil_node)
 			x = node;
@@ -271,7 +365,8 @@ public:
 		}
 
 		node_type* child = x->lchild != nil_node ? x->lchild : x->rchild;
-
+		nil_node->parent = x;
+		
 		if(isLchild(x)) {
 			x->parent->lchild = child;
 			child->parent = x->parent;
@@ -318,11 +413,22 @@ public:
 		return true;
 	}
 	
+	iterator find(const value_type& val) {
+		ptr_node node = root;
+		while(node != nil_node && val != node->key) {
+			if(val < node->key) 
+				node = node->lchild;
+			else
+				node = node->rchild;
+		}
+		return iterator(node, nil_node);
+	}
+
 protected:
 	int __size;
-	node_type* root;
-	node_type* nil_node;
-
+	ptr_node root;
+	ptr_node nil_node;
+	iterator iterator_nil;
 };
 
 #endif

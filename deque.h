@@ -67,8 +67,6 @@ struct deque_iterator : public iterator_template<tinyAr::random_access_iterator_
 	inline bool operator!= (const self& it) const {
 		return node != it.node;
 	}
-
-	
 };
 
 template <class T>
