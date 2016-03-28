@@ -24,11 +24,19 @@ public:
 		return rb->find(val);
 	}
 	
+	iterator lower_bound(const T& val) {
+		return rb->lower_bound(val);
+	}
+
+	iterator upper_bound(const T& val) {
+		return rb->upper_bound(val);
+	}
+
 	int count(const T& val) {
 		return rb->find(val) != rb->end();
 	}
 	
-	bool insert(const T& val) {
+	iterator insert(const T& val) {
 		return rb->rb_insert(val);
 	}
 	

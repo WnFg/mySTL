@@ -53,6 +53,7 @@ class rb_tree_iterator : public iterator_template<tinyAr::bidirectional_iterator
 {
 public:
 	typedef iterator_template<tinyAr::bidirectional_iterator_tag, node_type> base;
+	typedef typename node_type::key_type key_type;
 
 	using typename base::pointer;
 	using typename base::value_type;
@@ -69,6 +70,14 @@ public:
 	rb_tree_iterator(pointer p, pointer end) : base(p), nil_node(end)
 	{}
 	
+	key_type& operator* () {
+		return *(node->key);
+	}
+	
+	key_type* operator-> () {
+		return &(node->key);
+	}
+
 	self& operator++ () {
 		if(node->rchild != nil_node) {
 			node = node_type::leftmost_node(node->rchild, nil_node);
@@ -393,7 +402,7 @@ public:
 	}
 	
 	inline iterator begin() {
-		return iterator(root, nil_node);
+		return iterator(node_type::leftmost_node(root, nil_node), nil_node);
 	}
 	
 	inline iterator end() {
@@ -430,12 +439,12 @@ public:
 		delete x;
 	}
 	
-	bool rb_insert(const value_type& val) {
+	iterator rb_insert(const value_type& val) {
 		if(__size == 0) {
 			root = new node_type(val, nil_node);
 			root->color = rb_tree_black;
 			__size = 1;
-			return true;
+			return iterator(root, nil_node);
 		}
 
 		node_type* node = new node_type(val, nil_node);
@@ -445,7 +454,7 @@ public:
 		node_type** ptr_ptr_node = &root;
 		while(*ptr_ptr_node != nil_node) {
 			if(**ptr_ptr_node == *node) 
-				return false;
+				return iterator(nil_node, nil_node);
 			
 			parent = *ptr_ptr_node;
 			if(*node < **ptr_ptr_node) {
@@ -460,7 +469,7 @@ public:
 			rb_insert_fixup(node);
 		}
 		__size++;
-		return true;
+		return iterator(node, nil_node);
 	}
 	
 	iterator find(const value_type& val) {

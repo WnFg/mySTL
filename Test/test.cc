@@ -1,33 +1,40 @@
-#include "map.h"
 #include <iostream>
-#include "set.h"
-#include "queue.h"
-#include "__rb_tree.h"
-//map<int, int> mp;
-queue<int> q;
-set<int> st;
-rb_tree<int> rb;
+//#include <map>
+#include "map.h"
+//using namespace std;
+
 class A
 {
 public:
-	int a, b;	
-	void operator= (int x) {
-		a = x;
+	int f() {
+		std::cout << "AAA" << std::endl;
+		return 0;
 	}
+	~A() { std::cout << "asd" << std::endl;}
+};
+
+class B : public A
+{
+public:
+	A a;
+	int f() {
+		return A::f();
+	}
+	B()  {}
 };
 
 map<int, int> mp;
 int main()
 {
-	mp.insert(1, 2);
-	mp.insert(2, 3);
+	B b;
+	b.f();
+	mp.insert(2, 1);
+	mp.insert(1, 3);
+	std::cout << (mp.begin()->second) << std::endl;
 	std::cout << mp[2] << std::endl;
-	mp[2] = 4;
-	A a;
-	a.a = 1, a.b = 2;
-	A b;
-	b = 5;
-	b = a;
-	std::cout << b.a << " " << b.b << std::endl;
+	mp.lower_bound(2);
+	std::cout << mp.size() << std::endl;
+	mp[4];
+	std::cout << mp.size() << std::endl;
 	return 0;
 }

@@ -6,35 +6,35 @@
 template <class T1, class T2>
 struct element_type
 {
-	element_type() : first(NULL), second(NULL) {}
-	element_type(const T1& a, const T2& b) : first(new T1(a)), second(new T2(b)) {}
-	
+	element_type() {}
+	element_type(const T1& a, const T2& b) : first(a), second(b) {}
+
 	inline bool operator< (const element_type<T1, T2>& x) const {
-		return *first < *x.first;
+		return first < x.first;
 	}
 	
 	inline bool operator<= (const element_type<T1, T2>& x) const {
-		return *first <= *x.first;
+		return first <= x.first;
 	}
 
 	inline bool operator> (const element_type<T1, T2>& x) const {
-		return *first > *x.first;
+		return first > x.first;
 	}
 
 	inline bool operator>= (const element_type<T1, T2>& x) const {
-		return *first >= *x.first;
+		return first >= x.first;
 	}
 
 	inline bool operator== (const element_type<T1, T2>& x) const {
-		return *first == *x.first;
+		return first == x.first;
 	}
 
 	inline bool operator!= (const element_type<T1, T2>& x) const {
-		return *first != *x.first;
+		return first != x.first;
 	}
 
-	T1* first;
-	T2* second;
+	T1 first;
+	T2 second;
 };
 
 template <class T1, class T2, class BaseNode_type = rb_tree_node_base<element_type<T1, T2> > >
@@ -56,11 +56,19 @@ public:
 	map() : rb(new rb_tree<key_value_type>) {}
 	~map() { delete rb;}
 
-	iterator find(const T1& val) {
+	iterator find(const key_type& val) {
 		return rb->find(key_value_type(val, T2()));
 	}
 	
-	bool insert(const T1& v1, const T2& v2) {
+	iterator lower_bound(const key_type& key) {
+		return rb->lower_bound(key_value_type(key, value_type()));
+	}
+	
+	iterator upper_bound(const key_type& key) {
+		return rb->upper_bound(key_value_type(key, value_type()));
+	}
+
+	iterator insert(const key_type& v1, const value_type& v2) {
 		return rb->rb_insert(key_value_type(v1, v2));
 	}
 	
@@ -72,7 +80,7 @@ public:
 		return rb->size() == 0;
 	}
 	
-	bool erase(const T1& val) {
+	bool erase(const key_type& val) {
 		return rb->erase(key_value_type(val, T2()));
 	}
 
@@ -93,7 +101,10 @@ public:
 	}
 	
 	value_type& operator[] (const key_type& key) {
-		return *(find(key)->key.second);
+		iterator it(find(key));
+		if(it == rb->end())
+			it = rb->rb_insert(key_value_type(key, value_type()));
+		return it->second;
 	}
 	
 protected:
