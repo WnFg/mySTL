@@ -70,12 +70,10 @@ public:
 	{}
 	
 	self& operator++ () {
-//		std::cout << "~~~~~~~~~~" << std::endl;
 		if(node->rchild != nil_node) {
 			node = node_type::leftmost_node(node->rchild, nil_node);
 		}else {
 			while(node->parent != NULL && !isLchild()) {
-			//	std::cout << (node->key) << std::endl;
 				node = node->parent;
 			}
 			if(node->parent != NULL) 
@@ -83,7 +81,6 @@ public:
 			else
 				node = nil_node;
 		}
-	//	std::cout << "~~~~~~~~~" << std::endl;
 		return *this;
 	}
 
@@ -144,10 +141,7 @@ public:
 	~rb_tree() { clear();}
 
 	void clear() {
-		iterator it(root, nil_node);
-		while(it != iterator_nil) {
-			delete &(*it++);
-		}
+		__clear(root);
 		root = NULL;
 		__size = 0;
 	}
@@ -157,6 +151,14 @@ public:
 	}
 
 protected:
+	void __clear(ptr_node node) {
+		if(node == NULL || node == nil_node)
+			return ;
+		__clear(node->lchild);
+		__clear(node->rchild);
+		delete node;
+	}
+
 	void left_roate(ptr_node& __root) {
 		ptr_node node = __root;
 		__root = __root->rchild;
@@ -220,10 +222,7 @@ protected:
 	}
 	
 	void __insert_case_b_1(node_type* gparent) {
-//		std::cout << "case_b_1" << std::endl;
 		left_roate(gparent);
-	//	std::cout << (gparent->key) << " !!" << std::endl;
-	//	std::cout << (root->rchild->key) << " ##" << std::endl; 
 		gparent->lchild->color = rb_tree_red;
 		gparent->color = rb_tree_black;
 	
@@ -455,7 +454,6 @@ public:
 				ptr_ptr_node = &(*ptr_ptr_node)->rchild;
 			}
 		}
-	//	std::cout << parent->key << std::endl;
 		*ptr_ptr_node = node;
 		node->parent = parent;
 		if(parent->color == rb_tree_red) {
