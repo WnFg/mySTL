@@ -1,6 +1,5 @@
 #include <iostream>
 #include <functional>
-#include <functional>
 using namespace std;
 
 template <int N>
