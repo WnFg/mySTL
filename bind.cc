@@ -27,16 +27,16 @@ private:
 public:
 	functor(tuple<types...> tp, callable f) : tp(tp), f(f) {}
 	template <typename tuple_type2, typename tuple_type1, typename... pgTypes>
-	static returnType invok(callable f, tuple_type2 tp2, tuple_type1 tp1, pgTypes... args)
+	static returnType invoke(callable f, tuple_type2 tp2, tuple_type1 tp1, pgTypes... args)
 	{
 		return functor<N - 1, returnType, callable, types...>::
-				invok(f, tp2, tp1, replacePg(get<N - 1>(tp1), tp2), args...);
+				invoke(f, tp2, tp1, replacePg(get<N - 1>(tp1), tp2), args...);
 	}
 		
 	template <typename... pgTypes>
 	returnType operator()(pgTypes... args)
 	{
-		return functor<N, returnType, callable, types...>::invok(f, make_tuple(args...), tp);
+		return functor<N, returnType, callable, types...>::invoke(f, make_tuple(args...), tp);
 	}
 };
 
@@ -47,7 +47,7 @@ private:
 	callable f;
 public:
 	template <typename tuple_type2, typename tuple_type1, typename... pgTypes>
-	static returnType invok(callable f, tuple_type2 tp2, tuple_type1 tp1, pgTypes... args)
+	static returnType invoke(callable f, tuple_type2 tp2, tuple_type1 tp1, pgTypes... args)
 	{
 		return f(args...);
 	}
